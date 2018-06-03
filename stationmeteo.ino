@@ -110,8 +110,6 @@
 */
 
 #define MY_DEBUG
-#define SKETCH_DEBUG
-
 
 // Enable and select radio type attached
 #define MY_RADIO_NRF24
@@ -318,7 +316,7 @@ void loop()
     send(msgSolarpanel.set(SolarpanelV, 3));
   }
 
-  #ifdef SKETCH_DEBUG      
+  #ifdef MY_DEBUG      
    Serial.println("BME280 - Data :");
    Serial.print("Temperature:");
    Serial.println(temperature);
