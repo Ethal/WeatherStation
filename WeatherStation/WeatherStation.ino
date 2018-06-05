@@ -30,15 +30,15 @@
 
   DESCRIPTION
 
-  Capteur temperature sur panneau solaire, LTC3588 et supercap 10F 2.5V
-  capteur I2C BME280 https://github.com/hallard/Si7021
-  Pro mini 8Mhz 3.3V modifié en 1MHz interne BOD désactivé, LDO et LED dessoudé
-  Alimentation par panneau solaire 5V 1W, LTC3588 et supercap 10F 2.5V
-  capa 100uF 16V sur VIN2 LTC3588
+  Weather Station power up by solar panel, LTC3588 and supercap 10F 2.7V
+  Transmitteur I2C BME280
+  Pro mini 8Mhz 3.3V frequency modified to 1MHz internal BOD de-activated, LDO et LED remove
+  Powerered by solar panel 5V 1W, LTC3588 andt supercap 10F 2.5V
+  capacitor 100uF 16V connected to VIN2 LTC3588
 
-  topic pour trouver les bootloaders 1Mhz: http://forum.arduino.cc/index.php?topic=160647.15
+  topic for bootloaders 1Mhz: http://forum.arduino.cc/index.php?topic=160647.15
 
-  Ajouter dans Arduino\hardware\arduino\avr\boards.txt:
+  Add in Arduino\hardware\arduino\avr\boards.txt:
 
   ## Arduino Pro or Pro Mini (BOD 1.8V, 1MHz, 4800baud) w/ ATmega328
   ## --------------------------------------------------
@@ -57,10 +57,9 @@
   pro.menu.cpu.RC1MHZatmega328.build.mcu=atmega328p
   pro.menu.cpu.RC1MHZatmega328.build.f_cpu=1000000L
 
-  Pour le contenu des bootloaders :
+  bootloaders :
 
-    copier le contenu suivant dans un fichier optiboot_atmega328_pro_1MHz_4800.hex sous
-  /bootloaders/optiboot/:
+  copy to new file optiboot_atmega328_pro_1MHz_4800.hex in directory /bootloaders/optiboot/
 
   :107E0000112484B714BE81FFE6D085E08093810001
   :107E100082E08093C00088E18093C10086E0809377
@@ -233,7 +232,7 @@ void loop()
   float altitude        = bme.readAltitude(SEALEVELPRESSURE_HPA);
   float pressure        = (pressure_local / pow((1.0 - ( ALTITUDE / 44330.0 )), 5.255));
 
-  //calculate Data
+  //calculated Data
   float humidityAbsolue = EnvironmentCalculations::AbsoluteHumidity(temperature, humidity, envTempUnit);
   float dewPoint        = EnvironmentCalculations::DewPoint(temperature, humidity, envTempUnit);
   float frostPoint      = EnvironmentCalculations::FrostPoint(temperature, humidity, envTempUnit);
@@ -268,7 +267,7 @@ void loop()
     send(msgAltitude.set(altitude, 1));
   }
 
-  //get Pgood status from LTC
+  //read Pgood status from LTC
   int   ltcen           = digitalRead(LTC_EN_PIN);
 
   if (oldLtcEn != ltcen) {
