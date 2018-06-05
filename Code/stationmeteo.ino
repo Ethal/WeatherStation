@@ -124,29 +124,27 @@
 // see http://wormfood.net/avrbaudcalc.php
 #define MY_BAUD_RATE 4800
 
-//#include <Wire.h>
 #include <MySensors.h>
 #include "Adafruit_Sensor.h"
 #include "Adafruit_BME280.h"
 #include "EnvironmentCalculations.h"
 
-
-#define SKETCH_NAME "Ethal Weather Station"                 // Name of the sketch
-#define SKETCH_VERSION "2.0.0"                              // Version (2.x : use MySensors 2.x)
+#define SKETCH_NAME "Ethal Weather Station" // Name of the sketch
+#define SKETCH_VERSION "1.0.0"              // Version (2.x : use MySensors 2.x)
 
 #define CHILD_ID_TT 0
 #define CHILD_ID_HUM 1
 #define CHILD_ID_PTL 2
 #define CHILD_ID_PTC 3
 #define CHILD_ID_ALTITUDE 4
-#define CHILD_ID_SUPERCAP 5   //measure 2.5V voltage of supercap
-#define CHILD_ID_SOLARPANEL 6 //measure 5V voltage of solar panel
-#define CHILD_ID_LTCEN 7      //LTC Pgood
+#define CHILD_ID_SUPERCAP 5     //measure 2.5V voltage of supercap
+#define CHILD_ID_SOLARPANEL 6   //measure 5V voltage of solar panel
+#define CHILD_ID_LTCEN 7        //LTC Pgood 
 
-#define CHILD_ID_HUMABS 8
-#define CHILD_ID_DEWPOINT 9
-#define CHILD_ID_FROSTPOINT 10  
-#define CHILD_ID_HEATINDEX 11 
+#define CHILD_ID_HUMABS 8       
+#define CHILD_ID_DEWPOINT 9     
+#define CHILD_ID_FROSTPOINT 10    
+#define CHILD_ID_HEATINDEX 11    
 
 #define SEALEVELPRESSURE_HPA 1013.25
 #define ALTITUDE 160
@@ -167,7 +165,6 @@ int   oldSupercapPcnt     = 0;
 
 int   oldLtcEn            = 0;
 
-
 EnvironmentCalculations::AltitudeUnit envAltUnit  =  EnvironmentCalculations::AltitudeUnit_Meters;
 EnvironmentCalculations::TempUnit     envTempUnit =  EnvironmentCalculations::TempUnit_Celsius;
 
@@ -178,7 +175,6 @@ int LTC_EN_PIN          = 3;  // Digital input for the Pgood of the LTC
 
 // Initialize BME
 Adafruit_BME280 bme;
-
 
 // Initialize messages
 MyMessage msgTemperature(CHILD_ID_TT, V_TEMP);
@@ -194,7 +190,6 @@ MyMessage msgHumAbs(CHILD_ID_HUMABS, V_HUM);
 MyMessage msgDewPoint(CHILD_ID_DEWPOINT, V_TEMP);
 MyMessage msgFrostPoint(CHILD_ID_FROSTPOINT, V_TEMP);
 MyMessage msgHeatIndex(CHILD_ID_HEATINDEX, V_TEMP);
-
 
 void setup()
 {
@@ -226,12 +221,10 @@ void presentation()
   present(CHILD_ID_FROSTPOINT, S_TEMP);
   present(CHILD_ID_HEATINDEX, S_TEMP);
 
-
 }
 
 void loop()
 {
-
 
   // read data from bme280
   float temperature     = bme.readTemperature();
@@ -240,6 +233,7 @@ void loop()
   float altitude        = bme.readAltitude(SEALEVELPRESSURE_HPA);
   float pressure        = (pressure_local / pow((1.0 - ( ALTITUDE / 44330.0 )), 5.255));
 
+  //calculate Data
   float humidityAbsolue = EnvironmentCalculations::AbsoluteHumidity(temperature, humidity, envTempUnit);
   float dewPoint        = EnvironmentCalculations::DewPoint(temperature, humidity, envTempUnit);
   float frostPoint      = EnvironmentCalculations::FrostPoint(temperature, humidity, envTempUnit);
@@ -274,7 +268,7 @@ void loop()
     send(msgAltitude.set(altitude, 1));
   }
 
-  //get Pgood from LTC
+  //get Pgood status from LTC
   int   ltcen           = digitalRead(LTC_EN_PIN);
 
   if (oldLtcEn != ltcen) {
@@ -318,35 +312,37 @@ void loop()
 
   #ifdef MY_DEBUG      
    Serial.println("BME280 - Data :");
-   Serial.print("Temperature:");
+   Serial.print("ID : 0 - Temperature:");
    Serial.println(temperature);
-   Serial.print("Humidity:");
+   Serial.print("ID : 1 - Humidity:");
    Serial.println(humidity);
-   Serial.print("Pressure Local:");
+   Serial.print("ID : 2 - Pressure Local:");
    Serial.println(pressure_local);
-   Serial.print("Pressure corrected:");
+   Serial.print("ID : 3 - Pressure corrected:");
    Serial.println(pressure);
-   Serial.print("Altitude:");
+   Serial.print("ID : 4 - Altitude:");
    Serial.println(altitude);
    Serial.println("Calculated - Data :");   
-   Serial.print("Humidity absolute:");
+   Serial.print("ID : 8 - Humidity absolute:");
    Serial.println(humidityAbsolue);
-   Serial.print("Dew Point:");
+   Serial.print("ID : 9 -  Dew Point:");
    Serial.println(dewPoint);
-   Serial.print("Frost Point:");
+   Serial.print("ID : 10 - Frost Point:");
    Serial.println(frostPoint);
-   Serial.print("Heat Index:");
+   Serial.print("ID : 11 - Heat Index:");
    Serial.println(heatIndex);
-   Serial.println("Power - Data :");
-   Serial.print("Super Cap Val:");
+   Serial.println("Power/Status - Data :");
+   Serial.print("ID : 5 - Super Cap Val:");
    Serial.println(SupercapV);
-   Serial.print("Super Cap Pct:");
+   Serial.print("ID : ? - Super Cap Pct:");
    Serial.println(SupercapPcnt);  
-   Serial.print("Solar Power:");
+   Serial.print("ID : 6 - Solar Power:");
    Serial.println(SolarpanelV);
+   Serial.print("ID : 7 - Status:");
+   Serial.println(ltcen);
   #endif
 
- 
+
   // go to sleep cpu
   sleep(SLEEP_TIME);
 }
