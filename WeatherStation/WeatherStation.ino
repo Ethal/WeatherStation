@@ -145,10 +145,10 @@
 #define CHILD_ID_FROSTPOINT 10    
 #define CHILD_ID_HEATINDEX 11    
 
-#define SEALEVELPRESSURE_HPA 1013.25
-#define ALTITUDE 160
+#define SEALEVELPRESSURE_HPA 1013.25 // presssue in hPa at sea level
+#define ALTITUDE 160 // altitude of the wheater station location
 
-#define BME_ADR 0x76
+#define BME_ADR 0x76 // BME I2C Address
 
 // Initialize varibles
 unsigned long SLEEP_TIME  = 900000;  // 15' sleep time between reads (seconds * 1000 milliseconds)
@@ -272,9 +272,8 @@ void loop()
 
   if (oldLtcEn != ltcen) {
     oldLtcEn = ltcen;
-    send(msgLtcEn.set(ltcen == HIGH ? 0 : 1));
+    send(msgLtcEn.set(ltcen == HIGH ? 1 : 0));
   }
-  
 
   // Measure supercap voltage with adc
   int adcvoltage = analogRead(SUPERCAP_ADC_PIN);
